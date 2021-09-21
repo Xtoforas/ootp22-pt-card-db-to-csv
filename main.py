@@ -14,11 +14,12 @@ def main(args):
     url = "https://www.ootpdevelopments.com/perfect-team-22-baseball-card-list/"
     page = requests.get(url)
     soup = BeautifulSoup(page.text, 'html.parser')
-    # the `var cards` line is in `script` 61
+    # the `var cards` line is in `script` 62
     # the `var cards` line is on line 6
     # split between the assignment
     # strip the leading space, and trailing semi-colon
-    raw_cards = soup.find_all('script')[61].string.split('\n')[6].split('=')[1].lstrip().rstrip(';')
+
+    raw_cards = soup.find_all('script')[62].string.split('\n')[6].split('=')[1].lstrip().rstrip(';')
     cards = json.loads('{{"data":{}}}'.format(raw_cards))
     cards["headers"] = [
         "CardTitle",
