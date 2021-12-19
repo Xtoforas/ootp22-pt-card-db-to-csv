@@ -100,13 +100,60 @@ def main(args):
         "Team"
     ]
 
-    output_filename = f"{now}_card_dump.csv"
+    hand_dict = {
+        1: "R",
+        2: "L",
+        3: "S"
+    }
+
+    fielding_dict = {
+        1: "P",
+        2: "C",
+        3: "1B",
+        4: "2B",
+        5: "3B",
+        6: "SS",
+        7: "LF",
+        8: "CF",
+        9: "RF",
+        10: "DH"
+    }
+
+    role_dict = {
+        11: "SP",
+        12: "RP",
+        13: "CL"
+    }
+
+    batters_output_filename = f"{now}_card_dump_batters.csv"
+    pitchers_output_filename = f"{now}_card_dump_pitchers.csv"
     # print(cards)
-    with open(os.path.join(args.output_dir, output_filename), 'w') as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=cards["headers"])
-        writer.writeheader()
-        for card in cards["data"]:
-            writer.writerow(dict(zip(cards["headers"], card)))
+    with open(os.path.join(args.output_dir, batters_output_filename), 'w') as batters_csv_file:
+        with open(os.path.join(args.output_dir, pitchers_output_filename), 'w') as pitchers_csv_file:
+            batters_writer = csv.DictWriter(batters_csv_file, fieldnames=cards["headers"])
+            batters_writer.writeheader()
+            pitchers_writer = csv.DictWriter(pitchers_csv_file, fieldnames=cards["headers"])
+            pitchers_writer.writeheader()
+            for card in cards["data"]:
+                throwing_index = cards["headers"].index('Throws')
+                card[throwing_index] = hand_dict[card[throwing_index]]
+
+                hitting_index = cards["headers"].index('Bats')
+                card[hitting_index] = hand_dict[card[hitting_index]]
+
+                position_index = cards["headers"].index("Position")
+                card[position_index] = fielding_dict[card[position_index]]
+
+                role_index = cards["headers"].index("Role")
+                if card[role_index] == 0:
+                    card[role_index] = card[position_index]
+                else:
+                    card[role_index] = role_dict[card[role_index]]
+
+                if card[position_index] == "P":
+                    pitchers_writer.writerow(dict(zip(cards["headers"], card)))
+                else:
+                    batters_writer.writerow(dict(zip(cards["headers"], card)))
 
 
 
